@@ -1,17 +1,26 @@
-import React, { createContext, useContext, useReducer, useEffect, ReactNode } from "react";
-import { Prompt, Category, AppAction } from "../types";
-import { loadData, saveData } from "./storage";
+import React, {
+  createContext,
+  useContext,
+  useReducer,
+  useEffect,
+  useRef,
+  ReactNode,
+} from "react";
+import { Prompt, Category, AppAction, ThemeMode } from "../types";
+import { loadData, saveData, saveThemeMode } from "./storage";
 import { DEFAULT_CATEGORIES } from "../constants/defaults";
 
 interface AppState {
   prompts: Prompt[];
   categories: Category[];
+  themeMode: ThemeMode;
   isLoading: boolean;
 }
 
 const initialState: AppState = {
   prompts: [],
   categories: [],
+  themeMode: "system",
   isLoading: true,
 };
 
@@ -22,6 +31,7 @@ export function appReducer(state: AppState, action: AppAction): AppState {
         ...state,
         prompts: action.prompts,
         categories: action.categories,
+        themeMode: action.themeMode,
         isLoading: false,
       };
     case "ADD_PROMPT":
@@ -61,6 +71,8 @@ export function appReducer(state: AppState, action: AppAction): AppState {
       };
     case "SET_CATEGORIES":
       return { ...state, categories: action.categories };
+    case "SET_THEME_MODE":
+      return { ...state, themeMode: action.themeMode };
     default:
       return state;
   }
@@ -75,6 +87,7 @@ const AppContext = createContext<AppContextType | null>(null);
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(appReducer, initialState);
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -84,22 +97,42 @@ export function AppProvider({ children }: { children: ReactNode }) {
           type: "SET_INITIAL_DATA",
           prompts: data.prompts,
           categories: DEFAULT_CATEGORIES,
+          themeMode: data.themeMode,
         });
       } else {
         dispatch({
           type: "SET_INITIAL_DATA",
           prompts: data.prompts,
           categories: data.categories,
+          themeMode: data.themeMode,
         });
       }
     })();
   }, []);
 
   useEffect(() => {
-    if (!state.isLoading) {
-      saveData(state.prompts, state.categories);
+    if (state.isLoading) return;
+
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current);
     }
-  }, [state.prompts, state.categories]);
+
+    saveTimerRef.current = setTimeout(() => {
+      saveData(state.prompts, state.categories).catch(() => {});
+    }, 300);
+
+    return () => {
+      if (saveTimerRef.current) {
+        clearTimeout(saveTimerRef.current);
+      }
+    };
+  }, [state.prompts, state.categories, state.isLoading]);
+
+  useEffect(() => {
+    if (!state.isLoading) {
+      saveThemeMode(state.themeMode);
+    }
+  }, [state.themeMode, state.isLoading]);
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>

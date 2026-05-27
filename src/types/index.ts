@@ -16,8 +16,16 @@ export interface Category {
   color: string;
 }
 
+export type ThemeMode = "system" | "light" | "dark";
+
+export type TabParamList = {
+  Browse: { categoryId?: string } | undefined;
+  Categories: undefined;
+  Settings: undefined;
+};
+
 export type AppAction =
-  | { type: "SET_INITIAL_DATA"; prompts: Prompt[]; categories: Category[] }
+  | { type: "SET_INITIAL_DATA"; prompts: Prompt[]; categories: Category[]; themeMode: ThemeMode }
   | { type: "ADD_PROMPT"; prompt: Prompt }
   | { type: "UPDATE_PROMPT"; prompt: Prompt }
   | { type: "DELETE_PROMPT"; id: string }
@@ -25,4 +33,5 @@ export type AppAction =
   | { type: "ADD_CATEGORY"; category: Category }
   | { type: "UPDATE_CATEGORY"; category: Category }
   | { type: "DELETE_CATEGORY"; id: string }
-  | { type: "SET_CATEGORIES"; categories: Category[] };
+  | { type: "SET_CATEGORIES"; categories: Category[] }
+  | { type: "SET_THEME_MODE"; themeMode: ThemeMode };

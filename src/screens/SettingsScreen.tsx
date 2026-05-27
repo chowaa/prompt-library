@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, Text, TouchableOpacity, Switch, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system/legacy";
@@ -10,11 +10,14 @@ import { useTheme } from "../hooks/useTheme";
 export default function SettingsScreen() {
   const { state, dispatch } = useApp();
   const { colors, isDark } = useTheme();
-  const [isDarkMode, setIsDarkMode] = useState(isDark);
 
   const totalPrompts = state.prompts.length;
   const totalCategories = state.categories.length;
   const favoritedCount = state.prompts.filter((p) => p.isFavorite).length;
+
+  const handleThemeChange = (value: boolean) => {
+    dispatch({ type: "SET_THEME_MODE", themeMode: value ? "dark" : "light" });
+  };
 
   const handleExport = async () => {
     try {
@@ -47,6 +50,7 @@ export default function SettingsScreen() {
             type: "SET_INITIAL_DATA",
             prompts: data.prompts,
             categories: data.categories,
+            themeMode: state.themeMode,
           });
           Alert.alert("导入成功", `已导入 ${data.prompts.length} 个提示词`);
         } else {
@@ -70,26 +74,40 @@ export default function SettingsScreen() {
     onPress?: () => void;
   }) => (
     <TouchableOpacity
-      className="flex-row items-center px-4 py-3.5 mx-4 rounded-xl mb-2"
-      style={{ backgroundColor: colors.card }}
+      className="flex-row items-center px-4 py-3 mx-5 rounded-2xl mb-2.5"
+      style={{
+        backgroundColor: colors.card,
+        borderWidth: 0.5,
+        borderColor: colors.separator,
+      }}
       onPress={onPress}
       disabled={!onPress && !right}
       activeOpacity={0.6}
     >
-      <Ionicons name={icon as any} size={22} color={colors.primary} />
-      <Text className="flex-1 ml-3" style={{ fontSize: 17, color: colors.text }}>
+      <Ionicons name={icon as keyof typeof Ionicons.glyphMap} size={20} color={colors.primary} />
+      <Text className="flex-1 ml-3" style={{
+        fontSize: 17,
+        color: colors.text,
+        letterSpacing: -0.2,
+      }}>
         {label}
       </Text>
-      {right || <Ionicons name="chevron-forward" size={18} color={colors.textSecondary} />}
+      {right || <Ionicons name="chevron-forward" size={16} color={colors.textTertiary} />}
     </TouchableOpacity>
   );
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <View className="mt-4">
+      <View className="mt-6">
         <Text
-          className="px-4 mb-2"
-          style={{ fontSize: 13, color: colors.textSecondary, textTransform: "uppercase" }}
+          className="px-5 mb-2"
+          style={{
+            fontSize: 13,
+            color: colors.textSecondary,
+            textTransform: "uppercase",
+            fontWeight: "500",
+            letterSpacing: 0.5,
+          }}
         >
           外观
         </Text>
@@ -98,9 +116,10 @@ export default function SettingsScreen() {
           label="深色模式"
           right={
             <Switch
-              value={isDarkMode}
-              onValueChange={setIsDarkMode}
-              trackColor={{ false: "#E5E5EA", true: colors.primary }}
+              value={isDark}
+              onValueChange={handleThemeChange}
+              trackColor={{ false: "rgba(0,0,0,0.16)", true: colors.primary }}
+              ios_backgroundColor="rgba(0,0,0,0.16)"
             />
           }
         />
@@ -108,8 +127,14 @@ export default function SettingsScreen() {
 
       <View className="mt-6">
         <Text
-          className="px-4 mb-2"
-          style={{ fontSize: 13, color: colors.textSecondary, textTransform: "uppercase" }}
+          className="px-5 mb-2"
+          style={{
+            fontSize: 13,
+            color: colors.textSecondary,
+            textTransform: "uppercase",
+            fontWeight: "500",
+            letterSpacing: 0.5,
+          }}
         >
           数据
         </Text>
@@ -119,29 +144,33 @@ export default function SettingsScreen() {
 
       <View className="mt-6">
         <Text
-          className="px-4 mb-2"
-          style={{ fontSize: 13, color: colors.textSecondary, textTransform: "uppercase" }}
+          className="px-5 mb-2"
+          style={{
+            fontSize: 13,
+            color: colors.textSecondary,
+            textTransform: "uppercase",
+            fontWeight: "500",
+            letterSpacing: 0.5,
+          }}
         >
           统计
         </Text>
-        <View className="mx-4 rounded-xl p-4" style={{ backgroundColor: colors.card }}>
-          <View className="flex-row justify-between mb-2">
-            <Text style={{ fontSize: 15, color: colors.textSecondary }}>提示词总数</Text>
-            <Text style={{ fontSize: 15, fontWeight: "600", color: colors.text }}>
-              {totalPrompts}
-            </Text>
+        <View className="mx-5 rounded-2xl p-4" style={{
+          backgroundColor: colors.card,
+          borderWidth: 0.5,
+          borderColor: colors.separator,
+        }}>
+          <View className="flex-row justify-between mb-2.5">
+            <Text style={{ fontSize: 15, color: colors.textSecondary, letterSpacing: -0.1 }}>提示词总数</Text>
+            <Text style={{ fontSize: 15, fontWeight: "600", color: colors.text, letterSpacing: -0.1 }}>{totalPrompts}</Text>
           </View>
-          <View className="flex-row justify-between mb-2">
-            <Text style={{ fontSize: 15, color: colors.textSecondary }}>分类数</Text>
-            <Text style={{ fontSize: 15, fontWeight: "600", color: colors.text }}>
-              {totalCategories}
-            </Text>
+          <View className="flex-row justify-between mb-2.5">
+            <Text style={{ fontSize: 15, color: colors.textSecondary, letterSpacing: -0.1 }}>分类数</Text>
+            <Text style={{ fontSize: 15, fontWeight: "600", color: colors.text, letterSpacing: -0.1 }}>{totalCategories}</Text>
           </View>
           <View className="flex-row justify-between">
-            <Text style={{ fontSize: 15, color: colors.textSecondary }}>已收藏</Text>
-            <Text style={{ fontSize: 15, fontWeight: "600", color: colors.text }}>
-              {favoritedCount}
-            </Text>
+            <Text style={{ fontSize: 15, color: colors.textSecondary, letterSpacing: -0.1 }}>已收藏</Text>
+            <Text style={{ fontSize: 15, fontWeight: "600", color: colors.text, letterSpacing: -0.1 }}>{favoritedCount}</Text>
           </View>
         </View>
       </View>

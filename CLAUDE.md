@@ -1,1 +1,26 @@
-@AGENTS.md
+# Prompt Library - CLAUDE.md
+
+- 技术栈: Expo SDK 54, React Native 0.81, React 19.1, TypeScript 5.9 (strict), NativeWind v4 (Tailwind CSS), React Navigation 7 (bottom tabs), AsyncStorage, react-native-reanimated 4, @expo/vector-icons (Ionicons), expo-haptics, expo-file-system, expo-document-picker, expo-sharing
+- 构建命令: `npx expo start` (开发), `npx expo start --ios` / `--android` (模拟器), `npx tsc --noEmit` (类型检查)
+- 测试命令: 暂无测试框架配置
+- 代码规范:
+  - TypeScript strict mode，禁止 `any` 类型
+  - Ionicons name 类型断言用 `keyof typeof Ionicons.glyphMap` 而非 `as any`
+  - 全局状态用 `useReducer` + Context (`src/store/AppContext.tsx`)
+  - 持久化 300ms 防抖，通过 `useRef` + `setTimeout` 实现
+  - San Francisco 字重体系: `"400"` Regular (正文), `"500"` Medium (标签/说明), `"600"` Semibold (标题/CTA)，不使用 `"700"` Bold
+  - iOS 26 设计语言: 毛玻璃半透明卡片 `rgba(255,255,255,0.72)`，0.5px 细边框，微负 letterSpacing
+  - 色彩三层: `text` → `textSecondary` → `textTertiary`，组件内统一用 Semantic Token
+  - 阴影分 light/dark 模式各 sm/md/lg 三档，使用 `src/constants/theme.ts` 中的 `Shadow` 常量
+  - 不允许非标准 fontWeight（如 `"590"`、`"590"`），React Native 不识别
+  - 默认不写注释，除非 WHY 不明显
+- 注意事项:
+  - **NativeWind v4 关键配置**: `nativewind/babel` 是 **preset** 不是 plugin，必须放在 `babel.config.js` 的 `presets` 数组中；`react-native-reanimated/plugin` 必须放在 `plugins` 最后一位
+  - **`jsxImportSource: "nativewind"`** 在 `tsconfig.json` 和 `babel.config.js` 中都要配置，缺一不可
+  - **Tailwind 内容扫描**: `tailwind.config.js` 的 `content` 路径覆盖 `./src/**/*.{js,jsx,ts,tsx}` 和 `./App.tsx`
+  - **Metro 配置**: `metro.config.js` 必须通过 `withNativeWind` 包装，指定 `input: "./src/global.css"`
+  - **毛玻璃限制**: RN 不支持 CSS `backdrop-filter: blur()`，毛玻璃效果通过半透明背景色 `rgba()` + 极细边框 + 柔和阴影模拟，低端设备效果会打折扣
+  - **App 入口**: `index.ts` → `App.tsx`，全局 CSS 在 `App.tsx` 中通过 `import "./src/global.css"` 引入
+  - **Expo SDK 54 文档**: 写代码前查阅 https://docs.expo.dev/versions/v54.0.0/，API 可能与旧版不兼容
+  - **Windows 环境**: 默认 `core.autocrlf=true` 会导致 LF→CRLF 转换警告，不影响运行但可能干扰 diff 审阅
+  - **ID 生成**: 使用 `Date.now().toString(36) + Math.random().toString(36).substring(2, 9)`，非加密场景足够

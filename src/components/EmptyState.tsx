@@ -14,27 +14,44 @@ export default function EmptyState({ title, message, actionLabel, onAction }: Em
   const { colors } = useTheme();
 
   return (
-    <View className="flex-1 items-center justify-center px-8">
-      <Ionicons name="documents-outline" size={64} color={colors.textSecondary} />
+    <View className="flex-1 items-center justify-center px-10">
+      <Ionicons
+        name="documents-outline"
+        size={56}
+        color={colors.textTertiary}
+      />
       <Text
-        className="text-center mt-4"
-        style={{ fontSize: 20, fontWeight: "600", color: colors.text }}
+        className="text-center mt-5"
+        style={{
+          fontSize: 20,
+          fontWeight: "600",
+          color: colors.text,
+          letterSpacing: -0.2,
+        }}
       >
         {title}
       </Text>
       <Text
         className="text-center mt-2"
-        style={{ fontSize: 15, color: colors.textSecondary, lineHeight: 22 }}
+        style={{
+          fontSize: 15,
+          color: colors.textSecondary,
+          lineHeight: 22,
+          letterSpacing: -0.1,
+        }}
       >
         {message}
       </Text>
       {actionLabel && onAction && (
         <TouchableOpacity
-          className="mt-6 px-6 py-3 rounded-xl"
+          className="mt-6 px-6 py-3 rounded-full"
           style={{ backgroundColor: colors.primary }}
           onPress={onAction}
+          activeOpacity={0.85}
         >
-          <Text className="text-white font-semibold text-base">{actionLabel}</Text>
+          <Text style={{ color: "#FFFFFF", fontWeight: "600", fontSize: 16, letterSpacing: -0.15 }}>
+            {actionLabel}
+          </Text>
         </TouchableOpacity>
       )}
     </View>

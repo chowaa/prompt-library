@@ -1,15 +1,16 @@
 import React, { useMemo } from "react";
 import { View } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { useApp } from "../store/AppContext";
 import { useTheme } from "../hooks/useTheme";
 import CategoryGrid from "../components/CategoryGrid";
 import EmptyState from "../components/EmptyState";
+import { TabParamList } from "../types";
 
 export default function CategoriesScreen() {
   const { state } = useApp();
   const { colors } = useTheme();
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<NavigationProp<TabParamList>>();
 
   const promptCounts = useMemo(() => {
     const counts: Record<string, number> = {};
