@@ -1,8 +1,7 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
-import BrowseScreen from "../screens/BrowseScreen";
-import CategoriesScreen from "../screens/CategoriesScreen";
+import HomeScreen from "../screens/HomeScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import { useTheme } from "../hooks/useTheme";
 import { TabParamList } from "../types";
@@ -43,22 +42,12 @@ export default function TabNavigator() {
       }}
     >
       <Tab.Screen
-        name="Browse"
-        component={BrowseScreen}
+        name="Home"
+        component={HomeScreen}
         options={{
-          title: "浏览",
+          title: "提示词库",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="search" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Categories"
-        component={CategoriesScreen}
-        options={{
-          title: "分类",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="grid" size={size} color={color} />
+            <Ionicons name="home-outline" size={size} color={color} />
           ),
         }}
       />
