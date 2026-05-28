@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { View, Text, TouchableOpacity, Switch, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system/legacy";
@@ -6,6 +6,66 @@ import * as Sharing from "expo-sharing";
 import * as DocumentPicker from "expo-document-picker";
 import { useApp } from "../store/AppContext";
 import { useTheme } from "../hooks/useTheme";
+import { ThemeMode } from "../types";
+
+const DarkModeRow = React.memo(function DarkModeRow({
+  isDark,
+  colors,
+  onThemeChange,
+}: {
+  isDark: boolean;
+  colors: ReturnType<typeof useTheme>["colors"];
+  onThemeChange: (themeMode: ThemeMode) => void;
+}) {
+  const [localValue, setLocalValue] = useState(isDark);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    setLocalValue(isDark);
+  }, [isDark]);
+
+  const handleValueChange = useCallback(
+    (value: boolean) => {
+      setLocalValue(value);
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => {
+        onThemeChange(value ? "dark" : "light");
+      }, 100);
+    },
+    [onThemeChange]
+  );
+
+  return (
+    <TouchableOpacity
+      className="flex-row items-center px-4 py-3 mx-5 rounded-2xl mb-2.5"
+      style={{
+        backgroundColor: colors.card,
+        borderWidth: 0.5,
+        borderColor: colors.separator,
+      }}
+      activeOpacity={0.6}
+      disabled
+    >
+      <Ionicons name="moon" size={20} color={colors.primary} />
+      <Text
+        className="flex-1 ml-3"
+        style={{
+          fontSize: 17,
+          color: colors.text,
+          letterSpacing: -0.2,
+        }}
+      >
+        深色模式
+      </Text>
+      <Switch
+        value={localValue}
+        onValueChange={handleValueChange}
+        trackColor={{ false: "rgba(0,0,0,0.16)", true: colors.primary }}
+        ios_backgroundColor="rgba(0,0,0,0.16)"
+      />
+    </TouchableOpacity>
+  );
+});
 
 export default function SettingsScreen() {
   const { state, dispatch } = useApp();
@@ -15,9 +75,12 @@ export default function SettingsScreen() {
   const totalCategories = state.categories.length;
   const favoritedCount = state.prompts.filter((p) => p.isFavorite).length;
 
-  const handleThemeChange = (value: boolean) => {
-    dispatch({ type: "SET_THEME_MODE", themeMode: value ? "dark" : "light" });
-  };
+  const handleThemeChange = useCallback(
+    (themeMode: ThemeMode) => {
+      dispatch({ type: "SET_THEME_MODE", themeMode });
+    },
+    [dispatch]
+  );
 
   const handleExport = async () => {
     try {
@@ -62,7 +125,7 @@ export default function SettingsScreen() {
     }
   };
 
-  const SettingRow = ({
+  const SettingRow = React.memo(function SettingRow({
     icon,
     label,
     right,
@@ -72,29 +135,31 @@ export default function SettingsScreen() {
     label: string;
     right?: React.ReactNode;
     onPress?: () => void;
-  }) => (
-    <TouchableOpacity
-      className="flex-row items-center px-4 py-3 mx-5 rounded-2xl mb-2.5"
-      style={{
-        backgroundColor: colors.card,
-        borderWidth: 0.5,
-        borderColor: colors.separator,
-      }}
-      onPress={onPress}
-      disabled={!onPress && !right}
-      activeOpacity={0.6}
-    >
-      <Ionicons name={icon as keyof typeof Ionicons.glyphMap} size={20} color={colors.primary} />
-      <Text className="flex-1 ml-3" style={{
-        fontSize: 17,
-        color: colors.text,
-        letterSpacing: -0.2,
-      }}>
-        {label}
-      </Text>
-      {right || <Ionicons name="chevron-forward" size={16} color={colors.textTertiary} />}
-    </TouchableOpacity>
-  );
+  }) {
+    return (
+      <TouchableOpacity
+        className="flex-row items-center px-4 py-3 mx-5 rounded-2xl mb-2.5"
+        style={{
+          backgroundColor: colors.card,
+          borderWidth: 0.5,
+          borderColor: colors.separator,
+        }}
+        onPress={onPress}
+        disabled={!onPress && !right}
+        activeOpacity={0.6}
+      >
+        <Ionicons name={icon as keyof typeof Ionicons.glyphMap} size={20} color={colors.primary} />
+        <Text className="flex-1 ml-3" style={{
+          fontSize: 17,
+          color: colors.text,
+          letterSpacing: -0.2,
+        }}>
+          {label}
+        </Text>
+        {right || <Ionicons name="chevron-forward" size={16} color={colors.textTertiary} />}
+      </TouchableOpacity>
+    );
+  });
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
@@ -111,18 +176,7 @@ export default function SettingsScreen() {
         >
           外观
         </Text>
-        <SettingRow
-          icon="moon"
-          label="深色模式"
-          right={
-            <Switch
-              value={isDark}
-              onValueChange={handleThemeChange}
-              trackColor={{ false: "rgba(0,0,0,0.16)", true: colors.primary }}
-              ios_backgroundColor="rgba(0,0,0,0.16)"
-            />
-          }
-        />
+        <DarkModeRow isDark={isDark} colors={colors} onThemeChange={handleThemeChange} />
       </View>
 
       <View className="mt-6">
