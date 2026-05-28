@@ -1,8 +1,8 @@
 # Prompt Library - CLAUDE.md
 
-- 技术栈: Expo SDK 54, React Native 0.81, React 19.1, TypeScript 5.9 (strict), NativeWind v4 + Tailwind CSS v3 (v4 不兼容 NativeWind), React Navigation 7 (bottom tabs), AsyncStorage, react-native-reanimated 4, @expo/vector-icons (Ionicons), expo-haptics, expo-file-system, expo-document-picker, expo-sharing
-- 构建命令: `npx expo start` (开发), `npx expo start --ios` / `--android` (模拟器), `npx tsc --noEmit` (类型检查)
-- 测试命令: 暂无测试框架配置
+- 技术栈: Expo SDK 54, React Native 0.81, React 19.1, TypeScript 5.9 (strict), NativeWind v4 + Tailwind CSS v3 (v4 不兼容 NativeWind), React Navigation 7 (bottom tabs: Home + Settings 双 Tab), AsyncStorage, react-native-reanimated 4, @expo/vector-icons (Ionicons), expo-haptics, expo-file-system, expo-document-picker, expo-sharing, react-native-web (实验性)
+- 构建命令: `npx expo start` (开发), `npx expo start --ios` / `--android` / `--web` (模拟器/浏览器), `npx tsc --noEmit` (类型检查)
+- 测试命令: `npm test` (Jest), `npm run test:coverage` (覆盖率), `npm run test:watch` (监听模式); 框架: Jest + @testing-library/react-native + @testing-library/jest-native
 - 代码规范:
   - TypeScript strict mode，禁止 `any` 类型
   - Ionicons name 类型断言用 `keyof typeof Ionicons.glyphMap` 而非 `as any`
