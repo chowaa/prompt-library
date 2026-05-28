@@ -1,6 +1,6 @@
 # Prompt Library - CLAUDE.md
 
-- 技术栈: Expo SDK 54, React Native 0.81, React 19.1, TypeScript 5.9 (strict), NativeWind v4 (Tailwind CSS), React Navigation 7 (bottom tabs), AsyncStorage, react-native-reanimated 4, @expo/vector-icons (Ionicons), expo-haptics, expo-file-system, expo-document-picker, expo-sharing
+- 技术栈: Expo SDK 54, React Native 0.81, React 19.1, TypeScript 5.9 (strict), NativeWind v4 + Tailwind CSS v3 (v4 不兼容 NativeWind), React Navigation 7 (bottom tabs), AsyncStorage, react-native-reanimated 4, @expo/vector-icons (Ionicons), expo-haptics, expo-file-system, expo-document-picker, expo-sharing
 - 构建命令: `npx expo start` (开发), `npx expo start --ios` / `--android` (模拟器), `npx tsc --noEmit` (类型检查)
 - 测试命令: 暂无测试框架配置
 - 代码规范:
