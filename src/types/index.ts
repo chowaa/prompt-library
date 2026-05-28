@@ -19,6 +19,7 @@ export interface Category {
 export type ThemeMode = "system" | "light" | "dark";
 
 export type TabParamList = {
+  Home: { categoryId?: string } | undefined;
   Browse: { categoryId?: string } | undefined;
   Categories: undefined;
   Settings: undefined;
