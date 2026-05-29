@@ -1,9 +1,9 @@
-import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import React, { useRef } from "react";
+import { View, Text, TouchableOpacity, Animated } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Prompt, Category } from "../types";
 import { useTheme } from "../hooks/useTheme";
-import { Radius } from "../constants/theme";
+import { FontSize, Radius, Shadow } from "../constants/theme";
 
 interface ShelfCardProps {
   prompt: Prompt;
@@ -18,22 +18,56 @@ export default function ShelfCard({
   onPress,
   onToggleFavorite,
 }: ShelfCardProps) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
+  const shadow = isDark ? Shadow.dark.sm : Shadow.light.sm;
+  const scale = useRef(new Animated.Value(1)).current;
+  const starScale = useRef(new Animated.Value(1)).current;
+
+  const handlePressIn = () => {
+    Animated.spring(scale, {
+      toValue: 0.97,
+      useNativeDriver: true,
+      speed: 50,
+      bounciness: 4,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scale, {
+      toValue: 1,
+      useNativeDriver: true,
+      speed: 50,
+      bounciness: 4,
+    }).start();
+  };
+
+  const handleToggleFavorite = () => {
+    Animated.sequence([
+      Animated.timing(starScale, { toValue: 0.8, duration: 80, useNativeDriver: true }),
+      Animated.spring(starScale, { toValue: 1, useNativeDriver: true, speed: 20, bounciness: 16 }),
+    ]).start();
+    onToggleFavorite();
+  };
 
   return (
-    <TouchableOpacity
-      className="overflow-hidden"
+    <Animated.View
       style={{
         width: 150,
         backgroundColor: colors.card,
         borderRadius: Radius.md,
         borderWidth: 0.5,
         borderColor: colors.separator,
+        ...shadow,
+        transform: [{ scale }],
       }}
-      onPress={onPress}
-      activeOpacity={0.6}
     >
-      <View className="p-3 flex-1 justify-between">
+      <TouchableOpacity
+        className="p-3 flex-1 justify-between"
+        onPress={onPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        activeOpacity={1}
+      >
         <View>
           {category && (
             <View
@@ -42,7 +76,7 @@ export default function ShelfCard({
             >
               <Text
                 style={{
-                  fontSize: 12,
+                  fontSize: FontSize.caption,
                   color: category.color,
                   fontWeight: "500",
                   letterSpacing: -0.1,
@@ -55,7 +89,7 @@ export default function ShelfCard({
           <Text
             className="mb-1"
             style={{
-              fontSize: 15,
+              fontSize: FontSize.subhead,
               fontWeight: "600",
               color: colors.text,
               letterSpacing: -0.2,
@@ -66,7 +100,7 @@ export default function ShelfCard({
           </Text>
           <Text
             style={{
-              fontSize: 13,
+              fontSize: FontSize.footnote,
               color: colors.textSecondary,
               lineHeight: 18,
               letterSpacing: -0.12,
@@ -78,7 +112,7 @@ export default function ShelfCard({
         </View>
         <View className="flex-row justify-end mt-2">
           <TouchableOpacity
-            onPress={onToggleFavorite}
+            onPress={handleToggleFavorite}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             style={{
               width: 44,
@@ -89,14 +123,16 @@ export default function ShelfCard({
               marginBottom: -12,
             }}
           >
-            <Ionicons
-              name={prompt.isFavorite ? "star" : "star-outline"}
-              size={18}
-              color={prompt.isFavorite ? colors.accent : colors.textTertiary}
-            />
+            <Animated.View style={{ transform: [{ scale: starScale }] }}>
+              <Ionicons
+                name={prompt.isFavorite ? "star" : "star-outline"}
+                size={18}
+                color={prompt.isFavorite ? colors.accent : colors.textTertiary}
+              />
+            </Animated.View>
           </TouchableOpacity>
         </View>
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </Animated.View>
   );
 }

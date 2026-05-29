@@ -1,6 +1,7 @@
 import React from "react";
-import { TouchableOpacity, Text } from "react-native";
+import { Text, TouchableOpacity } from "react-native";
 import { Category } from "../types";
+import { FontSize } from "../constants/theme";
 
 interface CategoryChipProps {
   category: Category;
@@ -22,16 +23,15 @@ export default function CategoryChip({
         backgroundColor: isSelected ? category.color + "E6" : category.color + "10",
         borderWidth: 1,
         borderColor: isSelected ? "transparent" : category.color + "30",
-        minHeight: 34,
       }}
       onPress={onPress}
       activeOpacity={0.7}
     >
       <Text
         style={{
-          color: isSelected ? "#FFFFFF" : category.color,
+          color: isSelected ? "rgba(0,0,0,0.88)" : category.color,
           fontWeight: "500",
-          fontSize: 13,
+          fontSize: FontSize.footnote,
           letterSpacing: -0.1,
         }}
       >

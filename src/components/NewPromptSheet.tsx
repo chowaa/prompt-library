@@ -15,6 +15,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { Category, Prompt } from "../types";
 import { useTheme } from "../hooks/useTheme";
+import { FontSize, Radius } from "../constants/theme";
 
 interface NewPromptSheetProps {
   visible: boolean;
@@ -44,6 +45,8 @@ export default function NewPromptSheet({
 
   useEffect(() => {
     if (visible) {
+      scrimOpacity.setValue(0);
+      panelTranslateY.setValue(300);
       Animated.parallel([
         Animated.timing(scrimOpacity, {
           toValue: 1,
@@ -56,9 +59,6 @@ export default function NewPromptSheet({
           useNativeDriver: true,
         }),
       ]).start();
-    } else {
-      scrimOpacity.setValue(0);
-      panelTranslateY.setValue(300);
     }
   }, [visible]);
 
@@ -112,12 +112,12 @@ export default function NewPromptSheet({
     Animated.parallel([
       Animated.timing(scrimOpacity, {
         toValue: 0,
-        duration: 150,
+        duration: 200,
         useNativeDriver: true,
       }),
       Animated.timing(panelTranslateY, {
         toValue: 300,
-        duration: 200,
+        duration: 300,
         useNativeDriver: true,
       }),
     ]).start(() => onClose());
@@ -126,7 +126,7 @@ export default function NewPromptSheet({
   if (!visible) return null;
 
   return (
-    <Modal visible transparent animationType="none" onRequestClose={handleClose}>
+    <Modal visible={visible} transparent animationType="none" onRequestClose={handleClose}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={StyleSheet.absoluteFill}
@@ -145,8 +145,10 @@ export default function NewPromptSheet({
         </Animated.View>
         <View className="flex-1 justify-end" pointerEvents="box-none">
           <Animated.View
-            className="rounded-t-[28px] p-5"
+            className="p-5"
             style={{
+              borderTopLeftRadius: Radius.xl,
+              borderTopRightRadius: Radius.xl,
               backgroundColor: isDark ? "rgba(28,28,30,0.98)" : "rgba(255,255,255,0.96)",
               maxHeight: "80%",
               borderWidth: 0.5,
@@ -157,10 +159,10 @@ export default function NewPromptSheet({
           >
             <View className="flex-row items-center justify-between mb-5">
               <TouchableOpacity onPress={handleClose}>
-                <Text style={{ fontSize: 17, color: colors.primary }}>取消</Text>
+                <Text style={{ fontSize: FontSize.body, color: colors.primary }}>取消</Text>
               </TouchableOpacity>
               <Text style={{
-                fontSize: 17,
+                fontSize: FontSize.body,
                 fontWeight: "600",
                 color: colors.text,
                 letterSpacing: -0.2,
@@ -168,7 +170,7 @@ export default function NewPromptSheet({
                 {editingPrompt ? "编辑提示词" : "新建提示词"}
               </Text>
               <TouchableOpacity onPress={handleSave}>
-                <Text style={{ fontSize: 17, fontWeight: "600", color: colors.primary }}>保存</Text>
+                <Text style={{ fontSize: FontSize.body, fontWeight: "600", color: colors.primary }}>保存</Text>
               </TouchableOpacity>
             </View>
 
@@ -176,7 +178,7 @@ export default function NewPromptSheet({
               <TextInput
                 className="rounded-2xl px-4 mb-4"
                 style={{
-                  fontSize: 17,
+                  fontSize: FontSize.body,
                   fontWeight: "400",
                   color: colors.text,
                   backgroundColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.04)",
@@ -191,7 +193,7 @@ export default function NewPromptSheet({
               <TextInput
                 className="rounded-2xl px-4 py-3.5 mb-4"
                 style={{
-                  fontSize: 16,
+                  fontSize: FontSize.callout,
                   color: colors.text,
                   backgroundColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.04)",
                   minHeight: 130,
@@ -207,7 +209,7 @@ export default function NewPromptSheet({
               />
 
               <Text style={{
-                fontSize: 13,
+                fontSize: FontSize.footnote,
                 fontWeight: "500",
                 color: colors.textSecondary,
                 marginBottom: 6,
@@ -220,7 +222,7 @@ export default function NewPromptSheet({
               <TextInput
                 className="rounded-2xl px-4 mb-5"
                 style={{
-                  fontSize: 15,
+                  fontSize: FontSize.subhead,
                   color: colors.text,
                   backgroundColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.04)",
                   minHeight: 48,
@@ -233,7 +235,7 @@ export default function NewPromptSheet({
               />
 
               <Text style={{
-                fontSize: 13,
+                fontSize: FontSize.footnote,
                 fontWeight: "500",
                 color: colors.textSecondary,
                 marginBottom: 6,
@@ -250,10 +252,10 @@ export default function NewPromptSheet({
                     className="px-4 py-2 rounded-full mr-2"
                     style={{
                       backgroundColor:
-                        categoryId === cat.id ? cat.color + "E6" : cat.color + "10",
+                        categoryId === cat.id ? cat.color + "E6" : cat.color + "1A",
                       borderWidth: 1,
                       borderColor:
-                        categoryId === cat.id ? "transparent" : cat.color + "30",
+                        categoryId === cat.id ? "transparent" : cat.color + "40",
                     }}
                     onPress={() => setCategoryId(cat.id)}
                   >
@@ -261,11 +263,11 @@ export default function NewPromptSheet({
                       style={{
                         color: categoryId === cat.id ? "#FFFFFF" : cat.color,
                         fontWeight: "500",
-                        fontSize: 13,
+                        fontSize: FontSize.footnote,
                         letterSpacing: -0.1,
                       }}
                     >
-                      <Ionicons name={cat.icon as keyof typeof Ionicons.glyphMap} size={13} /> {cat.name}
+                      <Ionicons name={cat.icon as keyof typeof Ionicons.glyphMap} size={FontSize.footnote} /> {cat.name}
                     </Text>
                   </TouchableOpacity>
                 ))}
@@ -277,8 +279,8 @@ export default function NewPromptSheet({
                   style={{ backgroundColor: isDark ? "rgba(255,69,58,0.12)" : "rgba(255,69,58,0.08)" }}
                   onPress={handleDelete}
                 >
-                  <Text style={{ fontSize: 16, fontWeight: "500", color: "#FF453A", letterSpacing: -0.15 }}>
-                    <Ionicons name="trash-outline" size={16} color="#FF453A" /> 删除提示词
+                  <Text style={{ fontSize: FontSize.callout, fontWeight: "500", color: "#FF453A", letterSpacing: -0.15 }}>
+                    <Ionicons name="trash-outline" size={FontSize.callout} color="#FF453A" /> 删除提示词
                   </Text>
                 </TouchableOpacity>
               )}

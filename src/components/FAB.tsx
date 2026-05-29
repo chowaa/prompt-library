@@ -2,7 +2,7 @@ import React from "react";
 import { TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../hooks/useTheme";
-import { Shadow } from "../constants/theme";
+import { Shadow, Spacing } from "../constants/theme";
 
 interface FABProps {
   onPress: () => void;
@@ -15,8 +15,10 @@ export default function FAB({ onPress }: FABProps) {
   return (
     <TouchableOpacity
       testID="fab"
-      className="absolute bottom-8 right-6 w-14 h-14 rounded-full items-center justify-center"
+      className="absolute w-14 h-14 rounded-full items-center justify-center"
       style={{
+        bottom: Spacing.xl,
+        right: Spacing.lg,
         backgroundColor: colors.primary,
         ...shadow,
       }}
