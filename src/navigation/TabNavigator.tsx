@@ -5,6 +5,7 @@ import HomeScreen from "../screens/HomeScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import { useTheme } from "../hooks/useTheme";
 import { TabParamList } from "../types";
+import { FontSize } from "../constants/theme";
 
 const Tab = createBottomTabNavigator<TabParamList>();
 
@@ -23,7 +24,7 @@ export default function TabNavigator() {
           paddingTop: 6,
         },
         tabBarLabelStyle: {
-          fontSize: 11,
+          fontSize: FontSize.caption2,
           fontWeight: "500",
           letterSpacing: -0.05,
         },
@@ -35,7 +36,7 @@ export default function TabNavigator() {
         },
         headerTintColor: colors.text,
         headerTitleStyle: {
-          fontSize: 17,
+          fontSize: FontSize.body,
           fontWeight: "600",
           letterSpacing: -0.2,
         },

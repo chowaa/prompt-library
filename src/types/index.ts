@@ -19,9 +19,7 @@ export interface Category {
 export type ThemeMode = "system" | "light" | "dark";
 
 export type TabParamList = {
-  Home: { categoryId?: string } | undefined;
-  Browse: { categoryId?: string } | undefined;
-  Categories: undefined;
+  Home: undefined;
   Settings: undefined;
 };
 
@@ -35,4 +33,6 @@ export type AppAction =
   | { type: "UPDATE_CATEGORY"; category: Category }
   | { type: "DELETE_CATEGORY"; id: string }
   | { type: "SET_CATEGORIES"; categories: Category[] }
-  | { type: "SET_THEME_MODE"; themeMode: ThemeMode };
+  | { type: "SET_THEME_MODE"; themeMode: ThemeMode }
+  | { type: "SAVE_ERROR"; error: string }
+  | { type: "SAVE_SUCCESS" };

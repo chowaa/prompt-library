@@ -15,6 +15,7 @@ interface AppState {
   categories: Category[];
   themeMode: ThemeMode;
   isLoading: boolean;
+  saveError: string | null;
 }
 
 const initialState: AppState = {
@@ -22,6 +23,7 @@ const initialState: AppState = {
   categories: [],
   themeMode: "system",
   isLoading: true,
+  saveError: null,
 };
 
 export function appReducer(state: AppState, action: AppAction): AppState {
@@ -73,6 +75,10 @@ export function appReducer(state: AppState, action: AppAction): AppState {
       return { ...state, categories: action.categories };
     case "SET_THEME_MODE":
       return { ...state, themeMode: action.themeMode };
+    case "SAVE_ERROR":
+      return { ...state, saveError: action.error };
+    case "SAVE_SUCCESS":
+      return { ...state, saveError: null };
     default:
       return state;
   }
@@ -118,7 +124,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
 
     saveTimerRef.current = setTimeout(() => {
-      saveData(state.prompts, state.categories).catch(() => {});
+      saveData(state.prompts, state.categories)
+        .then(() => {
+          if (state.saveError) dispatch({ type: "SAVE_SUCCESS" });
+        })
+        .catch((err) => {
+          console.warn("Save failed:", err);
+          dispatch({
+            type: "SAVE_ERROR",
+            error: "数据保存失败，下次打开时可能丢失最近的修改",
+          });
+        });
     }, 300);
 
     return () => {
