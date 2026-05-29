@@ -2,7 +2,7 @@
 
 - 技术栈: Expo SDK 54, React Native 0.81, React 19.1, TypeScript 5.9 (strict), NativeWind v4 + Tailwind CSS v3 (v4 不兼容 NativeWind), React Navigation 7 (bottom tabs: Home + Settings 双 Tab), AsyncStorage, react-native-reanimated 4, @expo/vector-icons (Ionicons), expo-haptics, expo-file-system, expo-document-picker, expo-sharing, react-native-web (实验性)
 - 构建命令: `npx expo start` (开发), `npx expo start --ios` / `--android` / `--web` (模拟器/浏览器), `npx tsc --noEmit` (类型检查)
-- 测试命令: `npm test` (Jest), `npm run test:coverage` (覆盖率), `npm run test:watch` (监听模式); 框架: Jest + @testing-library/react-native + @testing-library/jest-native
+- 测试命令: `npm test` (Jest), `npm run test:coverage` (覆盖率), `npm run test:watch` (监听模式); 框架: Jest + @testing-library/react-native + @testing-library/jest-native ⚠️ 暂无测试文件
 - 代码规范:
   - TypeScript strict mode，禁止 `any` 类型
   - Ionicons name 类型断言用 `keyof typeof Ionicons.glyphMap` 而非 `as any`
@@ -14,6 +14,33 @@
   - 阴影分 light/dark 模式各 sm/md/lg 三档，使用 `src/constants/theme.ts` 中的 `Shadow` 常量
   - 不允许非标准 fontWeight（如 `"590"`、`"590"`），React Native 不识别
   - 默认不写注释，除非 WHY 不明显
+- 设计 Token:
+  - **FontSize (7 级)**: `caption:13, footnote:14, body:17, title3:20, title2:22, title1:28, largeTitle:34`
+  - **Spacing (4px 体系)**: `xs:4, sm:8, md:12, lg:20, xl:28, xxl:40`
+  - **Radius**: `sm:10, md:16, lg:24, xl:28, full:9999`
+  - **Shadow**: light/dark 各 sm/md/lg 三档，通过 `Shadow.light.xx` / `Shadow.dark.xx` 引用
+  - **Colors**: light/dark 双模式，`background, card, cardSolid, primary, accent, text, textSecondary, textTertiary, separator, scrim`
+  - 所有组件 fontSize 必须引用 `FontSize.*` token，禁止硬编码数字
+  - 所有组件定位/间距必须引用 `Spacing.*` / `Radius.*` token，禁止裸值
+- 动效规范 ⚠️ 均为设计规格，暂未实现:
+  - 卡片按下: `Animated.spring` scale 0.97→1.0 (speed:50, bounciness:4)，配合 `activeOpacity={1}`
+  - 收藏星标: `Animated.sequence` timing 0.8 (80ms) → spring 1.0 (speed:20, bounciness:16)
+  - Sheet 打开: scrim 200ms + panel 300ms (parallel)，关闭: scrim 200ms + panel 300ms (对称)
+  - 当前状态: 卡片仅 activeOpacity，星标无动画，Sheet 关动画不对称且有重入风险
+- 组件架构:
+  - `src/screens/HomeScreen.tsx` — 主屏，三态: Shelf(默认) / Search(搜索有结果) / Empty(无结果/空库)
+  - `src/screens/BrowseScreen.tsx` — 旧浏览页，保留但未注册到 Tab（用户选择保留）
+  - `src/screens/CategoriesScreen.tsx` — 旧分类页，保留但未注册到 Tab
+  - `src/screens/SettingsScreen.tsx` — 设置页，DarkModeRow 使用 React.memo + useCallback
+  - `src/components/PromptCard.tsx` — 搜索列表卡片，Shadow.md，activeOpacity 反馈
+  - `src/components/ShelfCard.tsx` — 横滚书架卡片，扁平无阴影，activeOpacity 反馈
+  - `src/components/SearchBar.tsx` — 实时搜索，Shadow.sm
+  - `src/components/CategoryChip.tsx` — 分类筛选胶囊，选中态暗色文字 `rgba(0,0,0,0.88)`
+  - `src/components/CategoryGrid.tsx` — 旧双列分类网格，保留但未使用
+  - `src/components/EmptyState.tsx` — 空状态，图标硬编码 `documents-outline`
+  - `src/components/FAB.tsx` — 悬浮按钮
+  - `src/components/NewPromptSheet.tsx` — 新建/编辑弹层，P0 竞态 bug 已知（visible=false 时 return null 导致动画截断）
+  - `src/utils/id.ts` — 共享 ID 生成（HomeScreen/BrowseScreen 中仍有内联副本，未统一引用）
 - 注意事项:
   - **NativeWind v4 关键配置**: `nativewind/babel` 是 **preset** 不是 plugin，必须放在 `babel.config.js` 的 `presets` 数组中；`react-native-reanimated/plugin` 必须放在 `plugins` 最后一位
   - **`jsxImportSource: "nativewind"`** 在 `tsconfig.json` 和 `babel.config.js` 中都要配置，缺一不可
@@ -23,4 +50,5 @@
   - **App 入口**: `index.ts` → `App.tsx`，全局 CSS 在 `App.tsx` 中通过 `import "./src/global.css"` 引入
   - **Expo SDK 54 文档**: 写代码前查阅 https://docs.expo.dev/versions/v54.0.0/，API 可能与旧版不兼容
   - **Windows 环境**: 默认 `core.autocrlf=true` 会导致 LF→CRLF 转换警告，不影响运行但可能干扰 diff 审阅
-  - **ID 生成**: 使用 `Date.now().toString(36) + Math.random().toString(36).substring(2, 9)`，非加密场景足够
+  - **StatusBar**: `App.tsx` 中根据 isDark 切换 `barStyle`（light-content / dark-content）
+  - **saveError**: 持久化失败时静默吞错（`catch(() => {})`），计划加 banner 提示

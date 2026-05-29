@@ -1,9 +1,10 @@
 import React, { useState, useMemo } from "react";
-import { View, Text, FlatList, ScrollView, TouchableOpacity } from "react-native";
-import { useRoute, RouteProp } from "@react-navigation/native";
+import { View, Text, FlatList, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useApp } from "../store/AppContext";
 import { useTheme } from "../hooks/useTheme";
+import { FontSize } from "../constants/theme";
+import { generateId } from "../utils/id";
 import SearchBar from "../components/SearchBar";
 import CategoryChip from "../components/CategoryChip";
 import PromptCard from "../components/PromptCard";
@@ -11,23 +12,15 @@ import ShelfCard from "../components/ShelfCard";
 import EmptyState from "../components/EmptyState";
 import FAB from "../components/FAB";
 import NewPromptSheet from "../components/NewPromptSheet";
-import { Prompt, TabParamList } from "../types";
+import { Prompt } from "../types";
 import * as Haptics from "expo-haptics";
-
-function generateId(): string {
-  return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
-}
 
 export default function HomeScreen() {
   const { state, dispatch } = useApp();
   const { colors } = useTheme();
-  const route = useRoute<RouteProp<TabParamList, "Home">>();
-  const routeCategoryId = route.params?.categoryId;
 
   const [search, setSearch] = useState("");
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
-    routeCategoryId || null
-  );
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [sheetVisible, setSheetVisible] = useState(false);
   const [editingPrompt, setEditingPrompt] = useState<Prompt | null>(null);
 
@@ -133,7 +126,13 @@ export default function HomeScreen() {
     }
   };
 
-  if (state.isLoading) return null;
+  if (state.isLoading) {
+    return (
+      <View style={{ flex: 1, backgroundColor: colors.background, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
 
   const totalPromptsEmpty = state.prompts.length === 0;
 
@@ -152,6 +151,7 @@ export default function HomeScreen() {
               keyExtractor={(item) => item.id}
               ListHeaderComponent={
                 <TouchableOpacity
+                  key="all"
                   className="px-4 py-2 rounded-full mr-2"
                   style={{
                     backgroundColor: colors.card,
@@ -164,7 +164,7 @@ export default function HomeScreen() {
                     style={{
                       color: colors.text,
                       fontWeight: "500",
-                      fontSize: 13,
+                      fontSize: FontSize.footnote,
                       letterSpacing: -0.1,
                     }}
                   >
@@ -204,6 +204,7 @@ export default function HomeScreen() {
               <EmptyState
                 title="没有匹配的提示词"
                 message="试试换个搜索词或分类筛选"
+                icon="search"
               />
             }
           />
@@ -212,6 +213,7 @@ export default function HomeScreen() {
         <EmptyState
           title="还没有提示词"
           message="点击右下角 + 创建第一个提示词"
+          icon="sparkles"
         />
       ) : (
         <ScrollView
@@ -223,7 +225,7 @@ export default function HomeScreen() {
               <View className="flex-row items-center px-5 mb-2">
                 <Text
                   style={{
-                    fontSize: 20,
+                    fontSize: FontSize.title3,
                     fontWeight: "600",
                     color: colors.text,
                     letterSpacing: -0.2,
@@ -264,7 +266,7 @@ export default function HomeScreen() {
               <View className="flex-row items-center justify-between px-5 mb-2">
                 <Text
                   style={{
-                    fontSize: 20,
+                    fontSize: FontSize.title3,
                     fontWeight: "600",
                     color: colors.text,
                     letterSpacing: -0.2,
@@ -278,7 +280,7 @@ export default function HomeScreen() {
                 >
                   <Text
                     style={{
-                      fontSize: 15,
+                      fontSize: FontSize.subhead,
                       fontWeight: "500",
                       color: colors.primary,
                       letterSpacing: -0.1,
@@ -287,7 +289,7 @@ export default function HomeScreen() {
                     查看全部{" "}
                     <Ionicons
                       name="chevron-forward"
-                      size={15}
+                      size={FontSize.subhead}
                       color={colors.primary}
                     />
                   </Text>
@@ -315,6 +317,30 @@ export default function HomeScreen() {
             </View>
           ))}
         </ScrollView>
+      )}
+
+      {state.saveError && (
+        <TouchableOpacity
+          className="absolute left-5 right-5 rounded-2xl px-4 py-3 flex-row items-center"
+          style={{
+            bottom: 100,
+            backgroundColor: colors.primary + "1F",
+            borderWidth: 0.5,
+            borderColor: colors.primary + "4D",
+            zIndex: 10,
+          }}
+          onPress={() => dispatch({ type: "SAVE_SUCCESS" })}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="warning-outline" size={16} color={colors.text} />
+          <Text
+            className="flex-1 ml-2"
+            style={{ fontSize: FontSize.footnote, color: colors.text, letterSpacing: -0.12 }}
+          >
+            {state.saveError}
+          </Text>
+          <Ionicons name="close" size={16} color={colors.text} />
+        </TouchableOpacity>
       )}
 
       <FAB onPress={() => setSheetVisible(true)} />

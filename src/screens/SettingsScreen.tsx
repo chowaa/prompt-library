@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useCallback } from "react";
 import { View, Text, TouchableOpacity, Switch, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system/legacy";
@@ -7,6 +7,7 @@ import * as DocumentPicker from "expo-document-picker";
 import { useApp } from "../store/AppContext";
 import { useTheme } from "../hooks/useTheme";
 import { ThemeMode } from "../types";
+import { FontSize } from "../constants/theme";
 
 const DarkModeRow = React.memo(function DarkModeRow({
   isDark,
@@ -17,20 +18,9 @@ const DarkModeRow = React.memo(function DarkModeRow({
   colors: ReturnType<typeof useTheme>["colors"];
   onThemeChange: (themeMode: ThemeMode) => void;
 }) {
-  const [localValue, setLocalValue] = useState(isDark);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    setLocalValue(isDark);
-  }, [isDark]);
-
   const handleValueChange = useCallback(
     (value: boolean) => {
-      setLocalValue(value);
-      if (timerRef.current) clearTimeout(timerRef.current);
-      timerRef.current = setTimeout(() => {
-        onThemeChange(value ? "dark" : "light");
-      }, 100);
+      onThemeChange(value ? "dark" : "light");
     },
     [onThemeChange]
   );
@@ -50,7 +40,7 @@ const DarkModeRow = React.memo(function DarkModeRow({
       <Text
         className="flex-1 ml-3"
         style={{
-          fontSize: 17,
+          fontSize: FontSize.body,
           color: colors.text,
           letterSpacing: -0.2,
         }}
@@ -58,10 +48,11 @@ const DarkModeRow = React.memo(function DarkModeRow({
         深色模式
       </Text>
       <Switch
-        value={localValue}
+        value={isDark}
         onValueChange={handleValueChange}
         trackColor={{ false: "rgba(0,0,0,0.16)", true: colors.primary }}
         ios_backgroundColor="rgba(0,0,0,0.16)"
+        accessibilityLabel="深色模式"
       />
     </TouchableOpacity>
   );
@@ -150,7 +141,7 @@ export default function SettingsScreen() {
       >
         <Ionicons name={icon as keyof typeof Ionicons.glyphMap} size={20} color={colors.primary} />
         <Text className="flex-1 ml-3" style={{
-          fontSize: 17,
+          fontSize: FontSize.body,
           color: colors.text,
           letterSpacing: -0.2,
         }}>
@@ -167,7 +158,7 @@ export default function SettingsScreen() {
         <Text
           className="px-5 mb-2"
           style={{
-            fontSize: 13,
+            fontSize: FontSize.footnote,
             color: colors.textSecondary,
             textTransform: "uppercase",
             fontWeight: "500",
@@ -183,7 +174,7 @@ export default function SettingsScreen() {
         <Text
           className="px-5 mb-2"
           style={{
-            fontSize: 13,
+            fontSize: FontSize.footnote,
             color: colors.textSecondary,
             textTransform: "uppercase",
             fontWeight: "500",
@@ -200,7 +191,7 @@ export default function SettingsScreen() {
         <Text
           className="px-5 mb-2"
           style={{
-            fontSize: 13,
+            fontSize: FontSize.footnote,
             color: colors.textSecondary,
             textTransform: "uppercase",
             fontWeight: "500",
@@ -215,16 +206,16 @@ export default function SettingsScreen() {
           borderColor: colors.separator,
         }}>
           <View className="flex-row justify-between mb-2.5">
-            <Text style={{ fontSize: 15, color: colors.textSecondary, letterSpacing: -0.1 }}>提示词总数</Text>
-            <Text style={{ fontSize: 15, fontWeight: "600", color: colors.text, letterSpacing: -0.1 }}>{totalPrompts}</Text>
+            <Text style={{ fontSize: FontSize.subhead, color: colors.textSecondary, letterSpacing: -0.1 }}>提示词总数</Text>
+            <Text style={{ fontSize: FontSize.subhead, fontWeight: "600", color: colors.text, letterSpacing: -0.1 }}>{totalPrompts}</Text>
           </View>
           <View className="flex-row justify-between mb-2.5">
-            <Text style={{ fontSize: 15, color: colors.textSecondary, letterSpacing: -0.1 }}>分类数</Text>
-            <Text style={{ fontSize: 15, fontWeight: "600", color: colors.text, letterSpacing: -0.1 }}>{totalCategories}</Text>
+            <Text style={{ fontSize: FontSize.subhead, color: colors.textSecondary, letterSpacing: -0.1 }}>分类数</Text>
+            <Text style={{ fontSize: FontSize.subhead, fontWeight: "600", color: colors.text, letterSpacing: -0.1 }}>{totalCategories}</Text>
           </View>
           <View className="flex-row justify-between">
-            <Text style={{ fontSize: 15, color: colors.textSecondary, letterSpacing: -0.1 }}>已收藏</Text>
-            <Text style={{ fontSize: 15, fontWeight: "600", color: colors.text, letterSpacing: -0.1 }}>{favoritedCount}</Text>
+            <Text style={{ fontSize: FontSize.subhead, color: colors.textSecondary, letterSpacing: -0.1 }}>已收藏</Text>
+            <Text style={{ fontSize: FontSize.subhead, fontWeight: "600", color: colors.text, letterSpacing: -0.1 }}>{favoritedCount}</Text>
           </View>
         </View>
       </View>
