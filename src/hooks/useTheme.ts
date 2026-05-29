@@ -12,6 +12,6 @@ export function useTheme() {
     return themeMode === "dark";
   }, [colorScheme, themeMode]);
 
-  const colors = isDark ? Colors.dark : Colors.light;
+  const colors = useMemo(() => isDark ? Colors.dark : Colors.light, [isDark]);
   return { isDark, colors };
 }

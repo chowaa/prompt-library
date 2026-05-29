@@ -25,18 +25,10 @@ export const Colors = {
   },
 } as const;
 
-export const CategoryColors: Record<string, string> = {
-  编程: "#5E5CE6",
-  写作: "#34C759",
-  设计: "#FF375F",
-  数据: "#007AFF",
-  通用: "#8E8E93",
-};
-
 export const Spacing = {
   xs: 4,
   sm: 8,
-  md: 14,
+  md: 12,
   lg: 20,
   xl: 28,
   xxl: 40,
@@ -51,8 +43,11 @@ export const Radius = {
 } as const;
 
 export const FontSize = {
-  caption: 13,
-  footnote: 14,
+  caption2: 11,
+  caption: 12,
+  footnote: 13,
+  subhead: 15,
+  callout: 16,
   body: 17,
   title3: 20,
   title2: 22,

@@ -1,6 +1,5 @@
 import {
   Colors,
-  CategoryColors,
   Spacing,
   Radius,
   FontSize,
@@ -64,28 +63,6 @@ describe("Colors", () => {
 
   it("should have accent color that differs between light and dark", () => {
     expect(Colors.light.accent).not.toBe(Colors.dark.accent);
-  });
-});
-
-// --- CategoryColors ---
-
-describe("CategoryColors", () => {
-  it("should have 5 default categories", () => {
-    expect(Object.keys(CategoryColors)).toHaveLength(5);
-  });
-
-  it("should contain expected category names", () => {
-    expect(CategoryColors).toHaveProperty("编程");
-    expect(CategoryColors).toHaveProperty("写作");
-    expect(CategoryColors).toHaveProperty("设计");
-    expect(CategoryColors).toHaveProperty("数据");
-    expect(CategoryColors).toHaveProperty("通用");
-  });
-
-  it("should have valid hex color for every category", () => {
-    Object.values(CategoryColors).forEach((color) => {
-      expect(color).toMatch(/^#[0-9A-Fa-f]{6}$/);
-    });
   });
 });
 
